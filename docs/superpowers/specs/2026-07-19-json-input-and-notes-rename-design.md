@@ -26,7 +26,7 @@ Merge conflicts are the reason for the registry in the next section. Upstream ke
 
 ### Working directory constraint
 
-`git clone` into `~/Developer` fails under the agent sandbox: `.git/hooks/*.sample` and `.git/config` are not writable there. Clone and configure remotes in `$TMPDIR`, then move the directory into place. Committing inside an existing repository under `~/Developer` works; only repository creation and `.git/config` writes are blocked.
+`git clone` into `~/Developer` fails under the agent sandbox: `.git/hooks/*.sample` and `.git/config` are not writable there. Clone, configure remotes, and commit in `$TMPDIR`, then `mv` the directory into place. A rename is not a content write, so the sandbox permits it and `.git/config` arrives intact. Committing inside an existing repository under `~/Developer` works; only repository creation and `.git/config` writes are blocked.
 
 ## Input type registry
 
