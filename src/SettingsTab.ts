@@ -1,6 +1,45 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import { LauncherModal } from "./LauncherModal";
-import ShortcutLauncherPlugin from "./main";
+import type { LauncherDraft } from "./LauncherModal";
+import { inputTypeLabel, MULTIPLE } from "./inputTypes";
+// Type-only, so SettingsTab does not import main at runtime.
+import type ShortcutLauncherPlugin from "./main";
+import type { Launcher } from "./main";
+
+function toDraft(launcher: Launcher): LauncherDraft {
+	return {
+		commandName: launcher.commandName,
+		shortcutName: launcher.shortcutName,
+		shortcutLabel: launcher.shortcutLabel,
+		inputTypes: launcher.inputTypes,
+		separator: launcher.separator,
+		outputFormat: launcher.outputFormat ?? "separator",
+		keys: launcher.keys ?? [],
+	};
+}
+
+function fromDraft(draft: LauncherDraft): Launcher {
+	return {
+		commandName: draft.commandName,
+		shortcutName: draft.shortcutName,
+		shortcutLabel: draft.shortcutLabel,
+		inputTypes: draft.inputTypes,
+		separator: draft.separator,
+		outputFormat: draft.outputFormat,
+		keys: draft.keys,
+	};
+}
+
+/** `Shortcut < First Input`, using the shortcut's name when set by identifier. */
+function summarise(launcher: Launcher): string {
+	const shortcut = launcher.shortcutLabel ?? launcher.shortcutName;
+	const first = launcher.inputTypes[0];
+	const input =
+		first === MULTIPLE
+			? `${MULTIPLE} (${launcher.outputFormat === "json" ? "JSON" : "separator"})`
+			: inputTypeLabel(first);
+	return `${shortcut} < ${input}`;
+}
 
 export class SettingsTab extends PluginSettingTab {
 	plugin: ShortcutLauncherPlugin;
@@ -25,17 +64,20 @@ export class SettingsTab extends PluginSettingTab {
 					new LauncherModal(
 						this.app,
 						false,
-						"",
-						"",
-						["Selected Text"],
-						",",
-						(commandName, shortcutName, inputTypes, separator) => {
-							this.plugin.settings.launchers.splice(0, 0, {
-								commandName: commandName,
-								shortcutName: shortcutName,
-								inputTypes: inputTypes,
-								separator: separator,
-							});
+						{
+							commandName: "",
+							shortcutName: "",
+							inputTypes: ["Selected Text"],
+							separator: ",",
+							outputFormat: "separator",
+							keys: [],
+						},
+						(draft) => {
+							this.plugin.settings.launchers.splice(
+								0,
+								0,
+								fromDraft(draft)
+							);
 							this.plugin.saveSettings();
 							this.display();
 						}
@@ -46,34 +88,16 @@ export class SettingsTab extends PluginSettingTab {
 		this.plugin.settings.launchers.forEach((launcher, index) => {
 			new Setting(containerEl)
 				.setName(launcher.commandName)
-				.setDesc(`${launcher.shortcutName} < ${launcher.inputTypes[0]}`)
+				.setDesc(summarise(launcher))
 				.addButton((button) =>
-					button.setIcon("pencil").onClick((event) => {
+					button.setIcon("pencil").onClick(() => {
 						new LauncherModal(
 							this.app,
 							true,
-							launcher.commandName,
-							launcher.shortcutName,
-							launcher.inputTypes,
-							launcher.separator,
-							(
-								commandName,
-								shortcutName,
-								inputTypes,
-								separator
-							) => {
-								this.plugin.settings.launchers[
-									index
-								].commandName = commandName;
-								this.plugin.settings.launchers[
-									index
-								].shortcutName = shortcutName;
-								this.plugin.settings.launchers[
-									index
-								].inputTypes = inputTypes;
-								this.plugin.settings.launchers[
-									index
-								].separator = separator;
+							toDraft(launcher),
+							(draft) => {
+								this.plugin.settings.launchers[index] =
+									fromDraft(draft);
 								this.plugin.saveSettings();
 								this.display();
 							}
