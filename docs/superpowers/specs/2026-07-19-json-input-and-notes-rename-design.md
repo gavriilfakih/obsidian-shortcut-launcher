@@ -75,7 +75,13 @@ const info = getFrontMatterInfo(text);
 return info.exists ? text.slice(info.contentStart) : text;
 ```
 
-`getFrontMatterInfo` reports `contentStart` as the offset where the properties block ends, including its closing `---`. Its `exists` flag is tested rather than relying on `contentStart` being `0` for a note without properties, which the API does not document. The function is available since Obsidian 1.5.7, so `minAppVersion` in `manifest.json` rises from `0.15.0` to `1.5.7`.
+`contentStart` sits past the closing `---` **and** the newline that follows it, so slicing needs no further trimming. This was measured by calling `getFrontMatterInfo` in Obsidian 1.13.2 rather than inferred from the documented wording, which says only that the block ends 'including the ---' and is ambiguous about the newline. The measurements are the fixture table in `tests/inputTypes.test.ts`; reimplementing the function in the test would only have tested the reimplementation.
+
+The distinction matters: a blank line the author left after the properties block appears in the slice as a leading `\n` and must survive. An earlier draft stripped one leading newline defensively, which would have silently eaten that line.
+
+The `exists` flag is tested rather than relying on `contentStart` being `0` when a note has no properties, though it was measured as `0`.
+
+The function is available since Obsidian 1.5.7, so `minAppVersion` in `manifest.json` rises from `0.15.0` to `1.5.7`.
 
 The term ‘content’ follows Obsidian rather than this plugin: `FrontMatterInfo.contentStart` and the documentation for `getAllTags` (‘combines all tags from frontmatter and note content’) both use it for the body after the properties block.
 
