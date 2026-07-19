@@ -18,6 +18,19 @@ Two rules exist to keep merges cheap:
 - Obsidian namespaces commands as `<plugin-id>:<command>`, so renaming the plugin renames every command. In this vault `cmdr` already references `obsidian-shortcut-launcher:share`, and hotkeys bind the same ids. They would break silently.
 - Nothing can update over it. Obsidian's update check iterates the community plugin list and skips entries that are not installed, so a plugin absent from that list is never reached. Upstream was delisted; it is in none of the ~5,800 entries in `community-plugins.json`.
 
+## Where the plugin runs
+
+| Vault | Install | Why |
+| --- | --- | --- |
+| `~/Developer/obsidian-vault-dev` | Symlink to this repo | Development. Hot-reload watches any plugin directory containing `.git`, so writing `main.js` reloads it. Matches how `obsidian-proper-properties` is set up in the same vault. |
+| `~/Vault` | Real directory, `./deploy.sh` | Holds the live launcher config in its `data.json`, which must not be shared with the dev vault. Obsidian Sync can only carry a real plugin folder to iOS. |
+
+Do not symlink this repo into the main vault. Both vaults would then share one `data.json`, so a throwaway launcher made while testing would overwrite the real configuration.
+
+### Mobile
+
+`isDesktopOnly` is `false` and must stay that way. Node builtins are reached through inline `require()` inside `runOnDesktop` and `listShortcuts` so they are never evaluated on iOS; a top-level `import` of `fs`, `os`, `path`, or `child_process` would break the mobile build. Only `require("obsidian")` may appear at the top level.
+
 ## Releasing
 
 `./release.sh <version>` (or `pnpm run release <version>`) bumps the three version fields, runs the tests and build, tags, and attaches `manifest.json` and `main.js` to a GitHub release. BRAT installs and updates this fork by reading those releases, so a change is not delivered anywhere until a release is cut.
