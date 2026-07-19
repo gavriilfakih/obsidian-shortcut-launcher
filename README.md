@@ -26,15 +26,23 @@ Nothing else is intentionally different. Upstream's separator output is reproduc
 
 ## Installing
 
-This fork is not in Obsidian's Community Plugins list. Build it and copy the output into your vault:
+Install with [BRAT](https://github.com/TfTHacker/obsidian42-brat): add `gavriilfakih/obsidian-shortcut-launcher` as a beta plugin. BRAT reads the repository's GitHub releases, so `pnpm run release <version>` is what publishes an update to every vault tracking it.
+
+To install by hand instead, build and copy the output:
 
 ```shell
 pnpm install
-npx tsc -noEmit -skipLibCheck && node esbuild.config.mjs production
-cp main.js manifest.json ~/YourVault/.obsidian/plugins/obsidian-shortcut-launcher/
+pnpm run build
+cp main.js manifest.json <vault>/.obsidian/plugins/obsidian-shortcut-launcher/
 ```
 
-It keeps upstream's plugin id, so it replaces an existing OSL install and inherits its settings. Because it shares that id, Obsidian may offer to 'update' it back to the community version; its version number is set ahead of upstream's to avoid that, but do not accept such an update.
+### On keeping upstream's plugin id
+
+This fork keeps upstream's `obsidian-shortcut-launcher` id, so it replaces an existing install and inherits its settings. That is deliberate, for two reasons.
+
+Obsidian namespaces commands as `<plugin-id>:<command>`, so this plugin's commands are ids like `obsidian-shortcut-launcher:share`. Changing the plugin id renames every command, which silently breaks any hotkey bound to one and any other plugin that references one.
+
+The id also cannot be updated over. Obsidian's update check iterates the community plugin list and skips entries that are not installed; a plugin absent from that list is never reached. Upstream is not in the list, so nothing will offer to replace this fork. Its version is nonetheless set ahead of upstream's, which costs nothing.
 
 ## Creating Launchers for Shortcuts
 

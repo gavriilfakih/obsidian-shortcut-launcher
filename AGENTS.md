@@ -13,6 +13,17 @@ Two rules exist to keep merges cheap:
 - **Add input types by adding a row to `INPUT_TYPES` in `src/inputTypes.ts`, never by adding a branch elsewhere.** Upstream repeats its input types in four places; this fork has one. Reintroducing a second place reintroduces the conflicts.
 - **Never change an `id` in `INPUT_TYPES`.** Ids are persisted in `data.json`, and the pre-existing ones are upstream's exact strings. That is what lets this fork rename labels with no migration and stay readable by upstream's build. Rename `label`; leave `id` alone.
 
+**Never change the plugin `id` in `manifest.json` either.** Sharing upstream's id is safe and load-bearing, not an oversight:
+
+- Obsidian namespaces commands as `<plugin-id>:<command>`, so renaming the plugin renames every command. In this vault `cmdr` already references `obsidian-shortcut-launcher:share`, and hotkeys bind the same ids. They would break silently.
+- Nothing can update over it. Obsidian's update check iterates the community plugin list and skips entries that are not installed, so a plugin absent from that list is never reached. Upstream was delisted; it is in none of the ~5,800 entries in `community-plugins.json`.
+
+## Releasing
+
+`./release.sh <version>` (or `pnpm run release <version>`) bumps the three version fields, runs the tests and build, tags, and attaches `manifest.json` and `main.js` to a GitHub release. BRAT installs and updates this fork by reading those releases, so a change is not delivered anywhere until a release is cut.
+
+`versions.json` takes `minAppVersion` from `manifest.json` rather than upstream's hardcoded `0.13.0`.
+
 ## Terminology
 
 Notes are called notes, not documents. The word 'Document' survives only in `id` values, where it is a storage detail and must not be shown to the user. `label` is the display string; a test asserts no label contains 'Document'.
