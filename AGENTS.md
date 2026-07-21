@@ -1,3 +1,16 @@
+<!-- instructions-sync:generated-defaults:start -->
+## Shared developer defaults
+
+- Use `uv` for Python environments and tools; never use `pip`, `pip3` or `pipx`.
+- Use `pnpm` for Node and JavaScript projects; do not substitute `npm` or `yarn`.
+- Use `zsh` for shell-specific work and prefer POSIX-compatible commands where practical.
+- Do not add dependencies without flagging the addition.
+- Check current documentation before coding against a niche tool or API.
+- Keep large generated files, data, images and binaries out of Git; update `.gitignore` proactively.
+- In an owned private repository, work directly on `main`. Treat commit and push as one action, with no pull request or review ceremony unless requested. Verify the origin before applying this rule; forks and third-party repositories follow their upstream workflow.
+- Run `instructions sync` after changing shared instructions, project instructions or project registration, then include its generated changes in the same commit.
+<!-- instructions-sync:generated-defaults:end -->
+
 # Shortcut Launcher (fork)
 
 A fork of [macstories/obsidian-shortcut-launcher](https://github.com/macstories/obsidian-shortcut-launcher). It tracks upstream and merges from it. It does not send pull requests back, so do not open one or suggest one.
