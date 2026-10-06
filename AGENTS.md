@@ -1,6 +1,7 @@
-<!-- instructions-sync:generated-defaults:start -->
 ## Shared developer defaults
 
+- Search for prior art before building anything new: existing tools, libraries and CLIs, GitHub included (`gh search repos`, `gh search code`, `gh repo view`). Report what exists and why it is not being adopted.
+- Clone a third-party repository and read it locally rather than browsing it through the GitHub API.
 - Use `uv` for Python environments and tools; never use `pip`, `pip3` or `pipx`.
 - Use `pnpm` for Node and JavaScript projects; do not substitute `npm` or `yarn`.
 - Use `zsh` for shell-specific work and prefer POSIX-compatible commands where practical.
@@ -8,8 +9,6 @@
 - Check current documentation before coding against a niche tool or API.
 - Keep large generated files, data, images and binaries out of Git; update `.gitignore` proactively.
 - In an owned private repository, work directly on `main`. Treat commit and push as one action, with no pull request or review ceremony unless requested. Verify the origin before applying this rule; forks and third-party repositories follow their upstream workflow.
-- Run `instructions sync` after changing shared instructions, project instructions or project registration, then include its generated changes in the same commit.
-<!-- instructions-sync:generated-defaults:end -->
 
 # Shortcut Launcher (fork)
 
