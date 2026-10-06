@@ -8,7 +8,8 @@
 - Do not add dependencies without flagging the addition.
 - Check current documentation before coding against a niche tool or API.
 - Keep large generated files, data, images and binaries out of Git; update `.gitignore` proactively.
-- In an owned private repository, work directly on `main`. Treat commit and push as one action, with no pull request or review ceremony unless requested. Verify the origin before applying this rule; forks and third-party repositories follow their upstream workflow.
+- In an owned private repository, work directly on `main`, with no pull request or review ceremony unless requested. Push only when asked, unless this file declares the repository personal or scratch. Verify the origin before applying this rule; forks and third-party repositories follow their upstream workflow.
+- This is a personal private repository: treat commit and push as one action. Push to `origin main` after every commit, because GitHub is the sync channel between machines and remote sessions. If a sandbox blocks the push, commit anyway and give one paste-ready push command.
 
 # Shortcut Launcher (fork)
 
